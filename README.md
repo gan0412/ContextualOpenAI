@@ -11,4 +11,4 @@ If you want to make your OpenAI generate context-based responses and copy the ne
     cd ..
     rm -rf temp_ContextualOpenAI
     echo "Files have been copied to the current directory."
-    ```
+  ```
