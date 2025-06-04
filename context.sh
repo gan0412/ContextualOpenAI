@@ -1,6 +1,3 @@
-#!/bin/bash
-
-# Clone the repository with sparse checkout for only the necessary files
 git clone --depth 1 --filter=blob:none --sparse https://github.com/gan0412/ContextualOpenAI.git temp_ContextualOpenAI
 cd temp_ContextualOpenAI
 git sparse-checkout set context.py chistory.py
