@@ -3,6 +3,7 @@
 If you want to make your OpenAI generate context-based responses and copy the necessary files in this repository, follow these simple steps
 1. Navigate to the directory where you want to copy the files and enable context-based responses 
 2. Copy and paste the following script:
+(For linux/unix users)
   ```bash
     git clone --depth 1 --filter=blob:none --sparse https://github.com/gan0412/ContextualOpenAI.git temp_ContextualOpenAI
     cd temp_ContextualOpenAI
@@ -12,6 +13,19 @@ If you want to make your OpenAI generate context-based responses and copy the ne
     rm -rf temp_ContextualOpenAI
     echo "Files have been copied to the current directory."
   ```
+(For powershell users)
+```bash
+  git clone --depth 1 --filter=blob:none --sparse https://github.com/gan0412/ContextualOpenAI.git temp_ContextualOpenAI
+  Set-Location temp_ContextualOpenAI
+  git sparse-checkout set context.py chistory.py
+  Move-Item context.py -Destination ..
+  Move-Item chistory.py -Destination ..
+  Set-Location ..
+  Remove-Item temp_ContextualOpenAI -Recurse -Force
+  Write-Host "Files have been copied to the current directory."
+```
+
+
 
 ---
 
