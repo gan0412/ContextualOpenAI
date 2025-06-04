@@ -27,8 +27,8 @@ The core functionality for enabling context-based responses is provided by two f
 ### 1. Generating Contextual Responses
 
 Use `contextualize_prompt` to prepare your prompt with relevant conversation history for the OpenAI API. The parameters are:    
-    - user_input: the client's current prompt
-    - max_tokens_limit: maximum token length of the context window 
+- user_input: the client's current prompt
+- max_tokens_limit: maximum token length of the context window 
 
 **Use Case:**
 `contextualize_prompt` should be called every time you want to generate a context-aware response.

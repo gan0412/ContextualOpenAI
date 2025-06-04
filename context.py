@@ -37,7 +37,7 @@ model = SentenceTransformer('all-MiniLM-L6-v2')
 
 # Constants for LLM token limits (should ideally be configured where LLM is called)
 LLM_MAX_CONTEXT_WINDOW = 1000 # Example: Max tokens for a gpt-3.5-turbo context window
-LLM_MIN_CONTEXT_WINDOW = 200  # Minimum useful context size
+LLM_MIN_CONTEXT_WINDOW = 300  # Minimum useful context size
 
 # --- NEW CONSTANT FOR EXPONENTIAL DECAY ---
 RECENCY_DECAY_ALPHA = 0.80 # Decay factor: 0 < alpha < 1. Closer to 1 is slower decay.
@@ -111,29 +111,22 @@ Please pay more attention to messages with higher scores when formulating your r
     system_message_tokens = get_token_count(system_message["content"])
 
 
-    # The effective maximum context window for the LLM, including the system message.
-    # This is what LLM_MAX_CONTEXT_WINDOW refers to.
-    effective_llm_context_window = max_tokens_limit + system_message_tokens 
 
     # Validate max_tokens_limit against the LLM's actual maximum context window
     # The sum of max_tokens_limit (for history+user) and system_message_tokens must not exceed LLM_MAX_CONTEXT_WINDOW
-    if effective_llm_context_window > LLM_MAX_CONTEXT_WINDOW:
+    if max_tokens_limit > LLM_MAX_CONTEXT_WINDOW:
         print(f"Warning: The sum of provided max_tokens_limit ({max_tokens_limit}) and system message tokens ({system_message_tokens}) exceeds LLM_MAX_CONTEXT_WINDOW ({LLM_MAX_CONTEXT_WINDOW}). Adjusting max_tokens_limit down to {LLM_MAX_CONTEXT_WINDOW - system_message_tokens}.")
-        max_tokens_limit = LLM_MAX_CONTEXT_WINDOW - system_message_tokens
-        # Ensure it doesn't go below MIN_CONTEXT_WINDOW after adjustment
-        if max_tokens_limit < LLM_MIN_CONTEXT_WINDOW:
-            max_tokens_limit = LLM_MIN_CONTEXT_WINDOW
-            print(f"Further adjustment: max_tokens_limit set to minimum useful context ({LLM_MIN_CONTEXT_WINDOW}).")
-    elif effective_llm_context_window < LLM_MIN_CONTEXT_WINDOW:
-        print(f"Warning: The combined context ({effective_llm_context_window}) is too small. Adjusting max_tokens_limit up to {LLM_MIN_CONTEXT_WINDOW - system_message_tokens}.")
-        max_tokens_limit = LLM_MIN_CONTEXT_WINDOW - system_message_tokens
-        if max_tokens_limit < 0: # Ensure max_tokens_limit for history isn't negative
-            max_tokens_limit = 0
-            print("Warning: max_tokens_limit for history set to 0 as system message already takes up too much space for minimum context.")
-
+        max_tokens_limit = LLM_MAX_CONTEXT_WINDOW
+    elif max_tokens_limit < LLM_MIN_CONTEXT_WINDOW:
+        print(f"Warning: The combined context ({max_tokens_limit}) is too small. Adjusting max_tokens_limit up to {LLM_MIN_CONTEXT_WINDOW}.")
+        max_tokens_limit = LLM_MIN_CONTEXT_WINDOW 
+        
+    
 
     current_message: Message = {"role": "user", "content": prompt}
     current_message_tokens = get_token_count(current_message["content"])
+
+
 
     # --- Add current user message to the working history deque ---
     # This deque will be used to determine what goes to the LLM.
